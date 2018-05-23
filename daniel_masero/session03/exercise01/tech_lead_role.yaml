@@ -1,0 +1,22 @@
+ kind: ClusterRole
+ apiVersion: rbac.authorization.k8s.io/v1beta1
+ metadata:
+    name: tech-lead-role
+ rules:
+  - apiGroups: ["*"] #cambiar
+    resources: ["pods","persistentVolumes","configMaps","deployments","service","autoscale","ingress"]
+    verbs: ["get", "list"]
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: tech-lead-role-binding
+subjects:
+- kind: User
+  name: jsalmeron 
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: tech-lead-role
+  apiGroup: rbac.authorization.k8s.io
+

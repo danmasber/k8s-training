@@ -1,0 +1,24 @@
+ kind: Role
+ apiVersion: rbac.authorization.k8s.io/v1beta1
+ metadata:
+ 	name: api-role
+    namespace: team-api
+
+ rules:
+  - apiGroups: ["*"] #cambiar
+    resources: ["pods","persistentVolumes","configMaps","deployments","service","autoscale","ingress","secrets"]
+    verbs: ["get", "create","delete"]
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: api-role-binding
+  namespace: team-api
+subjects:
+- kind: User
+  name: juan 
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role
+  name: api-role
+  apiGroup: rbac.authorization.k8s.io

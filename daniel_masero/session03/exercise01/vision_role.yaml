@@ -1,0 +1,12 @@
+ kind: Role
+ apiVersion: rbac.authorization.k8s.io/v1beta1
+ metadata:
+ 	name: vision-role
+    namespace: team-vision 
+
+ rules:
+  - apiGroups: ["*"]
+    resources: ["pods","persistentVolumes","configMaps","deployments","service","autoscale","ingress"]
+    verbs: ["get", "create","delete"]
+
+

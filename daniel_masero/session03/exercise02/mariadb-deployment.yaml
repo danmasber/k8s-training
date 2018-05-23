@@ -1,0 +1,67 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+   name: mariadb
+spec:
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: mariadb
+        tier: backend
+    spec:
+      containers:
+      - image: bitnami/mariadb:latest
+        name: mariadb
+        env: 
+          - name: ALLOW_EMPTY_PASSWORD
+            valueFrom:
+              configMapKeyRef:
+                name: wordpress
+                key: allow_empty_password
+          - name: MARIADB_DATABASE
+            valueFrom:
+              configMapKeyRef:
+                name: wordpress
+                key: wordpress_database_name
+          - name: MARIADB_USER
+            valueFrom:
+              secretKeyRef:
+                name: wordpress
+                key: dbuser
+          - name: MARIADB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: wordpress
+                key: dbpassword
+          - name: MARIADB_ROOT_PASSWORD
+            valueFrom:
+             secretKeyRef:
+                name: wordpress
+                key: dbrootpassword
+        ports:
+          - name: mariadb-server
+            containerPort: 3306
+        volumeMounts:
+          - mountPath: /bitnami
+            name: volumesdb
+            subPath: mariadb
+      volumes:
+      - name: volumesdb
+        emptyDir: {}
+        #persistentVolumeClaim:
+        #  claimName: volumes-mariadb
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: volumes-mariadb
+  labels:
+    app: mariadb
+spec:
+  accessModes:
+    - ReadWriteOnce 
+  resources:
+    requests:
+      storage: 1Gi
+

@@ -1,0 +1,71 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+   name: wordpress
+spec:
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: wordpress
+        tier: frontend
+    spec:
+      containers:
+      - image: bitnami/wordpress:latest
+        name: wordpress
+        env: 
+          - name: ALLOW_EMPTY_PASSWORD
+            valueFrom:
+              configMapKeyRef:
+                name: wordpress
+                key: allow_empty_password
+          - name: MARIADB_HOST
+            valueFrom:
+              configMapKeyRef:
+                name: wordpress
+                key: mariadb_host
+          - name: MARIADB_PORT_NUMBER
+            valueFrom:
+              configMapKeyRef:
+                name: wordpress
+                key: mariadb_port_number
+          - name: WORDPRESS_DATABASE_USER
+            valueFrom:
+              secretKeyRef:
+                name: wordpress
+                key: dbuser
+          - name: WORDPRESS_DATABASE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: wordpress
+                key: dbpassword
+          - name: WORDPRESS_DATABASE_NAME
+            valueFrom:
+              configMapKeyRef:
+                name: wordpress
+                key: wordpress_database_name
+
+        ports:
+          - name: http-server
+            containerPort: 80
+        volumeMounts:
+          - mountPath: /bitnami
+            name: volumeswordpress
+      volumes:
+      - name: volumeswordpress
+        emptyDir: {}
+        #persistentVolumeClaim:
+        #  claimName: volumes-wordpress
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: volumes-wordpress
+  labels:
+    app: ordpress
+spec:
+  accessModes:
+    - ReadWriteOnce 
+  resources:
+    requests:
+      storage: 1Gi
